@@ -1,5 +1,5 @@
 # Lemon
-### Lemon is a custom made for the windows OS
+### Lemon is a custom terminal made for the windows OS
 
 <img src="screenshot.png" alt="This is an image">
 
