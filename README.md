@@ -13,16 +13,16 @@ Changing modes to
 note: an alternative terminal emulator is recomended
 
 ## List of commands
--MODE = Changes the terminal mode (cmd, powershell, lemon)
--EXIT = Does exactly what it says
--CD = Changes the current working directory
--SHOWDIR = Prints the content of the current directory
--REMOVE = Removes a file or directory
--NEWDIR = Creates a new directory
--RENAME = Renames a file
--ENDTASK = Kills a process
--START = Starts a program
--CLEAR = Clears the screen
+- MODE = Changes the terminal mode (cmd, powershell, lemon)
+- EXIT = Does exactly what it says
+- CD = Changes the current working directory
+- SHOWDIR = Prints the content of the current directory
+- REMOVE = Removes a file or directory
+- NEWDIR = Creates a new directory
+- RENAME = Renames a file
+- ENDTASK = Kills a process
+- START = Starts a program
+- CLEAR = Clears the screen
 
 ## Building binary from source code
 Requierments:
