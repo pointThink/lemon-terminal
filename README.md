@@ -30,7 +30,7 @@ Requierments:
 - pyinstaller
 
 Building:
-- Change the directoryto the src folder
+- Change the directory to the src folder
 - Type in this command
 ``
 pyinstaller -F -i icon.ico lemon.py
