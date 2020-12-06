@@ -1,7 +1,7 @@
 # Lemon
 ### Lemon is a custom made for the windows OS
 
-<img src="screenchot.png" alt="This is an image">
+<img src="screenshot.png" alt="This is an image">
 
 It is in it's early stage and dosent have many features but for now we have
 
