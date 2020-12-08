@@ -28,6 +28,7 @@ note: an alternative terminal emulator is recomended
 Requierments:
 - python 3 (obviously)
 - pyinstaller
+- ansi colors foer python
 
 Building:
 - Change the directory to the src folder
