@@ -4,6 +4,7 @@ import os
 import getpass
 import subprocess
 import sys
+import shutil
 
 processRunning = False
 mode = "Lemon"
@@ -24,9 +25,13 @@ while processRunning == False:
     comamand = command.lower()
     keyWord = command.split(" ", 1)[0] # getting first word from string
     try:
-        parameter = command.split(" ", 2)[1] #getting second word from string
+        parameter = command.split(" ", 2)[1] # getting second word from string
+        parameter2 = command.split(" ", 3)[2] # getting third word from string
     except:
-        pass
+        try:
+            parameter = command.split(" ", 2)[1]
+        except:
+            pass
 
     # general commands
     if command == "exit":
@@ -37,8 +42,8 @@ while processRunning == False:
         try:
             os.chdir(command[3:])
         except:
-            print("Could not change path")
-            print("Path is non-existent or permission was denied")
+            print(color("Could not change path", fg="red"))
+            print(color("Path is non-existent or permission was denied", fg="red"))
 
     elif keyWord == "mode": # changing terminal mode
         if parameter == "powershell":
@@ -48,7 +53,7 @@ while processRunning == False:
         elif parameter == "lemon":
             mode = "Lemon"
         else:
-            print("Incorrect mode name")
+            print(color("Incorrect mode name", fg="red"))
 
     # mode specific commands
     elif mode == "Lemon":
@@ -69,12 +74,12 @@ while processRunning == False:
                 try:
                     os.remove(command[7:])
                 except FileNotFoundError:
-                    print("File not found")
+                    print(color("File not found", fg="red"))
                 except:
                     try:
                         os.rmdir(command[7:])
                     except:
-                        print("File/Directory is non-existent, permission was denied or directory is not empty")
+                        print(color("File/Directory is non-existent, permission was denied or directory is not empty", fg="red"))
 
         elif keyWord == "newdir": # creating directory
             os.mkdir(command[7:])
@@ -85,22 +90,42 @@ while processRunning == False:
             try:
                 os.rename(target, newname)
             except:
-                print("Renaming failed. File does not exist or permission was denied")
+                print(color("Renaming failed. File does not exist or permission was denied", fg="red"))
 
         # task managment commands
-        elif keyWord == "endtask":
+        elif keyWord == "endtask": # killing task
             try:
                 os.system("taskkill /F /im " + command[8:])
-            except:
-                print("Failed to kill " + command[8:])
 
-        elif keyWord == "start":
+            except:
+                print(color("Failed to kill " + command[8:], fg="red"))
+
+        elif keyWord == "showtasks":
+            output = os.popen('wmic process get description, processid').read()
+            print(output)
+
+        elif keyWord == "start": # starting programs
             try:
                 subprocess.Popen(command[6:])
             except:
-                print("File not found or permission was denied")
+                print(color("File not found or permission was denied", fg="red"))
+
         elif keyWord == "clear":
-            os.system("cls")
+            print(chr(27)+'[2j')
+            print('\033c')
+            print('\x1bc')
+
+        elif keyWord == "copy":
+            path = input("Enter file/directory destination: ")
+
+            try:
+                shutil.copyfile(command[5:], path)
+            except:
+                try:
+                    shutil.copytree(command[5:], path + command[5:])
+
+                except:
+                    print(color("Failed to copy file", fg="red"))
         else:
             try:
                 subprocess.Popen(command)
