@@ -10,7 +10,7 @@ processRunning = False
 mode = "Lemon"
 parameter = None
 
-print("Lemon Terminal ver: 0.1")
+print("Lemon Terminal ver: 0.2.1")
 print("")
 
 while processRunning == False:
@@ -62,10 +62,16 @@ while processRunning == False:
 
         # file managment commands
         elif keyWord == "showdir": # printing directory contents
-            if parameter == None:
-                print(os.listdir(os.getcwd()))
-            else:
-                print(os.listdir(command[8:]))
+            try:
+                if parameter == None:
+                    dirList = os.listdir(os.getcwd()) # getting list of contents
+                else:
+                    dirList = os.listdir(command[8:])
+            except:
+                print(color("Directiry is non existent or permission was denied", fg="red"))
+
+            for file in range(len(dirList)):
+                print(dirList[file])
 
         elif keyWord == "remove": # deleting files
             if command[7:] == "":
