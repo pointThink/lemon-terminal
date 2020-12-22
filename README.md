@@ -5,10 +5,8 @@
 
 It is in it's early stage and dosent have many features but for now we have
 
-Changing modes to
-- Lemon (Uses custom lemon commands)
-- Powershell (Uses powershell commands)
-- Command prompt (Uses cmd commands)
+- Changing modes
+- Basic file managment commands
 
 note: an alternative terminal emulator is recomended
 
