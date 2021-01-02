@@ -5,11 +5,11 @@
 
 <h1 align="center">Lemon Terminal</h1>
 
-### Lemon is a custom terminal shell made for the windows OS
+### Lemon is a custom, easy to use terminal shell made for the Windows Operating System
 
 <img src="gif.gif" alt="This is an image">
 
-It is in it's early stage and dosent have many features but for now we have
+It is in it's early stages of development and dosent have many features but for now we have
 
 - Changing modes
 - Basic file managment commands
@@ -19,6 +19,7 @@ It is in it's early stage and dosent have many features but for now we have
 note: an alternative terminal emulator is recomended
 
 ## List of commands
+#### Note: only the basic commands are here. A more detailed list is in command list.txt
 - MODE = Changes the terminal mode (cmd, powershell, lemon)
 - EXIT = Does exactly what it says
 - CD = Changes the current working directory
