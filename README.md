@@ -1,4 +1,5 @@
-# Lemon
+<h1 align="center">Quiet Text</h2>
+<img align="center" src="src/icon.ico" alt="Lemon logo" width="72" height="72">
 ### Lemon is a custom terminal shell made for the windows OS
 
 <img src="screenshot.png" alt="This is an image">
