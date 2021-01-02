@@ -33,6 +33,10 @@ Requierments:
 - python 3 (obviously)
 - pyinstaller
 - ansi colors for python
+- wmi
+- psutils
+- win32api
+- shutil
 
 Building:
 - Change the directory to the src folder
