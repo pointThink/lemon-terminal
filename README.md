@@ -7,12 +7,14 @@
 
 ### Lemon is a custom terminal shell made for the windows OS
 
-<img src="screenshot.png" alt="This is an image">
+<img src="gif.gif" alt="This is an image">
 
 It is in it's early stage and dosent have many features but for now we have
 
 - Changing modes
 - Basic file managment commands
+- Basic task managment commands
+- System information commands
 
 note: an alternative terminal emulator is recomended
 
