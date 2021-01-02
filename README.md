@@ -1,5 +1,10 @@
-<h1 align="center">Lemon Terminal</h2>
-<img align="center" src="src/icon.ico" alt="Lemon logo" width="72" height="72">
+<p align="center">
+    <img src="src/icon.ico" alt="Lemon logo" width="72" height="72">
+  </a>
+</p>
+
+<h1 align="center">Lemon Terminal</h1>
+
 ### Lemon is a custom terminal shell made for the windows OS
 
 <img src="screenshot.png" alt="This is an image">
