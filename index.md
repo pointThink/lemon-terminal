@@ -1,5 +1,5 @@
 <h1 align="center">Lemon Terminal</h1>
-<img src="gif.gif" alt="logo">
+<p align="center"><img src="gif.gif" alt="logo"></p>
 
 Lemon-Terminal is a custom, easy to use terminal shell for the Windows OS developed by pointThink
  
