@@ -1,7 +1,7 @@
 ## Lemon-Terminal
 
 <p align="center">
-    <img src="src/icon.ico" alt="Lemon logo" width="72" height="72">
+    <img src="https://www.github.com/pointThink/lemon-terminal/blob/main/src/icon.ico" alt="Lemon logo" width="72" height="72">
   </a>
 </p>
 
