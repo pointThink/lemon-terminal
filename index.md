@@ -3,6 +3,11 @@
 
 Lemon-Terminal is a custom, easy to use terminal shell for the Windows OS developed by pointThink
  
+ [Download binary](https://github.com/pointThink/lemon-terminal/releases)
+ 
+ [Download source](https://github.com/pointThink/lemon-terminal/archive/main.zip)
+ 
+ 
  It is in it's early stages of development and dosent have many features but for now we have
 
 - Changing modes
