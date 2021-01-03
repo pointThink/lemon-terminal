@@ -1,6 +1,13 @@
-## Welcome to GitHub Pages
+## Lemon-Terminal
 
-You can use the [editor on GitHub](https://github.com/pointThink/lemon-terminal/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+<p align="center">
+    <img src="src/icon.ico" alt="Lemon logo" width="72" height="72">
+  </a>
+</p>
+
+<h1 align="center">Lemon Terminal</h1>
+
+### Lemon is a custom, easy to use terminal shell made for the Windows Operating System
 
 Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
 
