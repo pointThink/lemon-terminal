@@ -18,6 +18,10 @@ It is in it's early stages of development and dosent have many features but for 
 
 note: an alternative terminal emulator is recomended
 
+## Links
+[Project website](http://lemon-terminal.atwebpages.com)
+[Project Blog](http://lemon-blog.atwebpages.com/)
+
 ## List of commands
 #### Note: only the basic commands are here. A more detailed list is in command list.txt
 - MODE = Changes the terminal mode (cmd, powershell, lemon)
