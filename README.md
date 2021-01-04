@@ -20,6 +20,7 @@ note: an alternative terminal emulator is recomended
 
 ## Links
 [Project website](http://lemon-terminal.atwebpages.com)
+
 [Project Blog](http://lemon-blog.atwebpages.com/)
 
 ## List of commands
