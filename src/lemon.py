@@ -1,4 +1,7 @@
 # imports
+# TODO: make code less messy
+
+
 from colors import *
 import os
 import getpass
@@ -12,13 +15,20 @@ import win32file
 import socket
 import datetime
 import wmi
+import urllib
+import ctypes
+
 # wow that's a lot of imports
+
+kernel32 = ctypes.windll.kernel32
+kernel32.SetConsoleMode(kernel32.GetStdHandle(-11), 7)
 
 processRunning = False
 
 mode = "Lemon"
+version = "0.3.7"
 
-print("Lemon Terminal version 0.3.6 |", end=" ")
+print("Lemon Terminal version " + version +" |", end=" ")
 print(datetime.datetime.now())
 print("https://www.github.com/pointThink/lemon-terminal")
 print()
@@ -27,7 +37,7 @@ while not processRunning:
 
     
     print(color(platform.node() + " | " + getpass.getuser(), fg="cyan"), end=" ") # platform.node = getting computer name | getpass.getuser = getting current user
-    print(color(os.getcwd(), fg="yellow"))
+    print(color(os.getcwd().upper(), fg="yellow"))
 
     command = input(color(mode + " > ", fg="green")) # command input
 
@@ -77,8 +87,17 @@ while not processRunning:
             except:
                 print(color("Directiry is non existent or permission was denied", fg="red"))
 
-            for file in range(len(dirList)): # using for loop for printing contents beacuse printing lists normally sucks
-                print(dirList[file])
+            try:
+                for file in range(len(dirList)): # using for loop for printing contents beacuse printing lists normally sucks
+                        if os.path.isdir(dirList[file]):
+                            print("[DIR] " + dirList[file])
+                    
+                        elif os.path.isfile(dirList[file]):
+                            print("[FILE] " + dirList[file])
+                        else:
+                            print(dirList[file])
+            except:
+                pass
 
         elif keyWord == "remove": # deleting files
             if command[7:] == "":
@@ -185,91 +204,110 @@ while not processRunning:
                     print(color("Could not open file " + file, fg="red"))
                     
         elif keyWord == "info": # prints information about system
-            if parameters[0] == "mem": # memory
-                 memory = psutil.virtual_memory()
-                 print("Total: " + color(round(memory.total / 1000000000, 1), fg="orange")) # getting total available memory and rounding it
-                 print()
+            try:
+
+                if parameters[0] == "mem": # memory
+                    memory = psutil.virtual_memory()
+                    print("Total: " + color(round(memory.total / 1000000000, 1), fg="orange")) # getting total available memory and rounding it
+                    print()
                
-                 print("Used: " + color(round(memory.used / 1000000000, 1), fg="orange")) # getting currently used memory and rounding it
-                 print("Free: " + color(round(memory.available / 1000000000, 1), fg="orange")) # getting currently available memory and rounding it
-            elif parameters[0] == "drive":
-                drives = win32api.GetLogicalDriveStrings() # getting list of available drive
-                drives = drives.split('\000')[:-1]
+                    print("Used: " + color(round(memory.used / 1000000000, 1), fg="orange")) # getting currently used memory and rounding it
+                    print("Free: " + color(round(memory.available / 1000000000, 1), fg="orange")) # getting currently available memory and rounding it
+                 
+                elif parameters[0] == "drive":
+                    drives = win32api.GetLogicalDriveStrings() # getting list of available drive
+                    drives = drives.split('\000')[:-1]
                 
-                try:
+                    try:
                 
-                    for drive in drives:
-                        print(drive, end=" ")
-                        print("info")
+                        for drive in drives:
+                            print(drive, end=" ")
+                            print("info")
                     
-                        print("Total: " + color(psutil.disk_usage(drive).total / 1000000000, fg="orange")) # printing total space on drive
-                        print("Used space: " + color(psutil.disk_usage(drive).used / 1000000000, fg="orange")) # printing used space on drive
-                        print("Free space: " + color(psutil.disk_usage(drive).free / 1000000000, fg="orange")) # printing available space on drive
+                            print("Total: " + color(psutil.disk_usage(drive).total / 1000000000, fg="orange")) # printing total space on drive
+                            print("Used space: " + color(psutil.disk_usage(drive).used / 1000000000, fg="orange")) # printing used space on drive
+                            print("Free space: " + color(psutil.disk_usage(drive).free / 1000000000, fg="orange")) # printing available space on drive
                     
-                        driveTypeInt = win32file.GetDriveType(drive) # getting the drive type id
+                            driveTypeInt = win32file.GetDriveType(drive) # getting the drive type id
                     
-                        if driveTypeInt == 2: # figuring out drive type from id
-                            driveType = "Removable Disk"
-                        elif driveTypeInt == 3:
-                            driveType = "Local Disk"
-                        elif driveTypeInt == 4:
-                            driveType = "Network Drive"
-                        elif driveTypeInt == 5:
-                            driveType = "CD"
-                        else:
-                            driveType = "Unknown"
+                            if driveTypeInt == 2: # figuring out drive type from id
+                                driveType = "Removable Disk"
+                            elif driveTypeInt == 3:
+                                driveType = "Local Disk"
+                            elif driveTypeInt == 4:
+                                driveType = "Network Drive"
+                            elif driveTypeInt == 5:
+                                driveType = "CD"
+                            else:
+                                driveType = "Unknown"
                     
-                        print("Drive type: " + color(driveType, fg ="orange")) # printing the found drive type
-                        print()
+                            print("Drive type: " + color(driveType, fg ="orange")) # printing the found drive type
+                            print()
                         
-                except PermissionError: # The "drive not ready" error is identified as "PermissionError" this may cause problems in some specific scenarios
-                        print(color("Could not read drive information" + drive  + " Drive not ready", fg="red"))
-                except: 
-                    print(color("Unknown Error", fg="red"))
+                    except PermissionError: # The "drive not ready" error is identified as "PermissionError" this may cause problems in some specific scenarios
+                        print(color("Could not read drive information Drive not ready", fg="red"))
+                    except: 
+                        print(color("Unknown Error", fg="red"))
         
-            elif parameters[0] == "net":
-                print("Name: " + color(socket.gethostname(), fg="orange")) # getting computer name
-                print("IP Adress: " + color(socket.gethostbyname(socket.gethostname()), fg="orange"))  # getting computer ip adress
+                elif parameters[0] == "net":
+                    print("Name: " + color(socket.gethostname(), fg="orange")) # getting computer name
+                    print("IP Adress: " + color(socket.gethostbyname(socket.gethostname()), fg="orange"))  # getting computer ip adress
                 
-                print()
-                print("NIC Cards")
+                    print()
+                    print("NIC Cards")
                 
 
-                addrs = psutil.net_if_addrs().keys # getting nic cards
+                    addrs = psutil.net_if_addrs().keys # getting nic cards
                 
-                for nic in addrs():
+                    for nic in addrs():
                         print(color(nic, fg="orange"))
                 
-            elif parameters[0] == "power":
-                print("Charge: " + color(psutil.sensors_battery().percent, fg="orange"), end="") # printing charge percentage
-                print(color("%", fg="orange"))
+                elif parameters[0] == "power":
+                    print("Charge: " + color(psutil.sensors_battery().percent, fg="orange"), end="") # printing charge percentage
+                    print(color("%", fg="orange"))
                 
-                if psutil.sensors_battery().power_plugged == False:  # printing power status
-                    print("Status: " + color("Using Battery", fg="orange"))
+                    if psutil.sensors_battery().power_plugged == False:  # printing power status
+                        print("Status: " + color("Using Battery", fg="orange"))
                     
-                elif psutil.sensors_battery().power_plugged == True:
-                    print("Status: " + color("Plugged in", fg="orange"))
+                    elif psutil.sensors_battery().power_plugged == True:
+                        print("Status: " + color("Plugged in", fg="orange"))
 
-                else:
-                    print("Status: " + color("Unknown", fg="orange"))
+                    else:
+                        print("Status: " + color("Unknown", fg="orange"))
             
-            elif parameters[0] == "cpu":
-                print("CPU: " + color(platform.processor(), fg="orange")) # printing processor namee
-                print("Architecture: " + color(platform.machine(), fg="orange")) # printing architectur
-                print("Logical CPU's: " + color(psutil.cpu_count(logical=True), fg="orange")) # printing logical cpu count
+                elif parameters[0] == "cpu":
+                    print("CPU: " + color(platform.processor(), fg="orange")) # printing processor namee
+                    print("Architecture: " + color(platform.machine(), fg="orange")) # printing architectur
+                    print("Logical CPU's: " + color(psutil.cpu_count(logical=True), fg="orange")) # printing logical cpu count
+            
+                elif parameters[0] == "term": # prints information about terminal
+                    print("Lemon-Terminal version " + version)
+                    print("Written and maintained by pointThink")
+                    print("Project website lemon-terminal.atwebpages.com")
                 
             
-            else:
+                else:
+                    print(color("Invalid parameter", fg="red"))
+            except:
                 print(color("Invalid parameter", fg="red"))
             
         elif keyWord == "time": # printing time and date
             print("The current time is ", end="")
             print(datetime.datetime.now())
+            
+        elif keyWord == "netstatus":
+            ip = socket.gethostbyname(socket.gethostname()) # getting ip adress
+            
+            if ip == "127.0.0.1":
+                print("No internet connection")
+                
+            else:
+                print("Connected")
 
         else: # if no matching command was found it will try to execute a program
             try:
                 subprocess.call(command)
-            except: # if that fails lemon will use a cmd command instead
+            except: # if that fails lemon will throw an error
                 print(color(command + " isn't a command or executable file", fg="red"))
 
     elif mode == "Command Prompt":
