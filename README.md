@@ -23,6 +23,8 @@ note: an alternative terminal emulator is recomended
 
 [Project Blog](http://lemon-blog.atwebpages.com/)
 
+[Discord Server](https://discord.gg/PfETwnfu)
+
 ## List of commands
 #### Note: only the basic commands are here. A more detailed list is in command list.txt
 - MODE = Changes the terminal mode (cmd, powershell, lemon)
