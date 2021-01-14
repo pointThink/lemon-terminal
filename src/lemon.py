@@ -1,48 +1,68 @@
-# imports
 # TODO: make code less messy
+import string
+vars = {}
 
-
-from colors import *
-import os
-import getpass
-import subprocess
-import sys
-import shutil
-import platform
-import psutil
-import win32api
-import win32file
-import socket
-import datetime
-import wmi
-import urllib
 import ctypes
-
-# wow that's a lot of imports
+import datetime
 
 kernel32 = ctypes.windll.kernel32
 kernel32.SetConsoleMode(kernel32.GetStdHandle(-11), 7)
 
+def log(type, string):
+    print("[" + "\033[1;32;40m " + str(datetime.datetime.now()) + " \033[m" + "] " + type + ": " + string)
+
+try:
+    from colors import *
+    import os
+    import getpass
+    import subprocess
+    import sys
+    import shutil
+    import platform
+    import psutil
+    import win32api
+    import win32file
+    import socket
+    import wmi
+    import urllib
+    # wow that's a lot of imports
+except Exception as exc:
+    log("Import Error", str(exc))
+    input("Press enter to exit")
+    sys.exit(1)
+
 processRunning = False
 
 mode = "Lemon"
-version = "0.3.7"
+version = "0.4.0"
+
+log("Info", "Lemon has been launched succesfully with no errors")
+print()
+
+command = "sysinfo"
 
 print("Lemon Terminal version " + version +" |", end=" ")
 print(datetime.datetime.now())
 print("https://www.github.com/pointThink/lemon-terminal")
-print()
 
 while not processRunning:
+        
 
+    if command == None:
+        print(color(platform.node() + " @ " + getpass.getuser(), fg="cyan"), end=" ") # platform.node = getting computer name | getpass.getuser = getting current user
+        print(color(os.getcwd().upper(), fg="yellow"))
+
+        command = input("(" + color(mode, fg="green") + ") ") # command input
+    else:
+        pass
     
-    print(color(platform.node() + " | " + getpass.getuser(), fg="cyan"), end=" ") # platform.node = getting computer name | getpass.getuser = getting current user
-    print(color(os.getcwd().upper(), fg="yellow"))
+    for key, value in vars.items(): # this replaces the dict key with its contents
+        if key in command:
+            command = command.replace("*" + key, str(value))
 
-    command = input(color(mode + " > ", fg="green")) # command input
 
-    command = command.lower()
     keyWord = command.split(" ", 1)[0] # getting first word from string
+    keyWord = keyWord.lower()
  
     parameters = command.split(" ") # getting parameters from the string
     del parameters[0] # removes the keyword
@@ -52,15 +72,15 @@ while not processRunning:
     
     # general commands
     if command == "exit":
+        log("Exit", "Exited lemon terminal [Exit by user]")
         sys.exit(1)
     elif command == "":
         pass
     elif keyWord == "cd": # changing cwd
         try:
             os.chdir(command[3:])
-        except:
-            print(color("Could not change path", fg="red"))
-            print(color("Path is non-existent or permission was denied", fg="red"))
+        except Exception as e:
+            print(color("Could not change path " + str(e), fg="red"))
 
     elif keyWord == "mode": # changing terminal mode
         if parameters[0] == "powershell":
@@ -82,20 +102,21 @@ while not processRunning:
             try:
                 if command[3:] == "":
                     dirList = os.listdir(os.getcwd()) # getting list of content | if directory wasn't specified lemon will use the current working directory
+                    dir = os.getcwd() + "/"
                 else:
                     dirList = os.listdir(command[3:])
-            except:
-                print(color("Directiry is non existent or permission was denied", fg="red"))
+                    dir = command[3:] + "/"
+            except Exception as e:
+                print(color("Error " + str(e), fg="red"))
 
             try:
                 for file in range(len(dirList)): # using for loop for printing contents beacuse printing lists normally sucks
-                        if os.path.isdir(dirList[file]):
-                            print("[DIR] " + dirList[file])
                     
-                        elif os.path.isfile(dirList[file]):
-                            print("[FILE] " + dirList[file])
-                        else:
-                            print(dirList[file])
+                        if os.path.isdir(dir + dirList[file]):
+                            print("[FOLDER] " + dirList[file])
+                    
+                        elif os.path.isfile(dir + dirList[file]):
+                            print(color("[FILE]   ", fg="green") + dirList[file])
             except:
                 pass
 
@@ -110,8 +131,8 @@ while not processRunning:
                 except: # if it fails it will instead try to remove a directory
                     try:
                         os.rmdir(command[7:])
-                    except: # if that also fails lemon will throw an error
-                        print(color("File/Directory is non-existent, permission was denied or directory is not empty", fg="red"))
+                    except Exception as e:
+                        print(color("Error " + str(e), fg="red"))
 
         elif keyWord == "newdir": # creating directory
             try:
@@ -124,8 +145,8 @@ while not processRunning:
             newname = input("Enter new file name: ")
             try:
                 os.rename(target, newname)
-            except:
-                print(color("Renaming failed. File does not exist or permission was denied", fg="red"))
+            except Exception as e:
+                print(color("Error " + str(e), fg="red"))
 
         # task managment commands
         elif keyWord == "endtask": # killing task
@@ -303,6 +324,57 @@ while not processRunning:
                 
             else:
                 print("Connected")
+                
+        elif keyWord == "log":
+            try:
+                log(command.split('"')[1], command.split('"')[3])
+            except Exception as e:
+                print(color("Error " + str(e), fg="red"))
+            
+        elif keyWord == "pyexec":
+            try:
+                exec(command[7:])
+            except Exception as e:
+                print(e)
+                
+        elif keyWord == "var":
+            try:
+                length = len(keyWord + "" + parameters[0] + " " + parameters[1] + "  ")
+                
+                if parameters[0] == "string":
+                    vars[parameters[1]] = command.split('=')[1].lstrip().rstrip()
+                elif parameters[0] == "int":
+                    vars[parameters[1]] = eval(command.split('=')[1])
+                elif parameters[0] == "output":
+                    
+                    if command.split('=')[1].lstrip().rstrip() == "input_read":
+                         vars[parameters[1]] = input()
+                        
+                else:
+                    print("Invalid var type")
+            except Exception as e:
+                print(color("Error: "+ str(e), fg="red"))
+                
+        elif keyWord == "echo":
+            try:
+                string = command.split('"')[1]
+                print(string)
+            except Exception as e:
+                print(color("Error: "+ str(e), fg="red"))
+                
+        elif keyWord == "ice":
+            print("ICE - Internal Code Executor")
+            print("Anything you write here will be executed as python code")
+            print()
+            
+            code = sys.stdin.readlines()
+            joinedCode = "\n".join(code)
+            
+            try:
+                print()
+                exec(joinedCode)
+            except Exception as e:
+                print(e)
 
         else: # if no matching command was found it will try to execute a program
             try:
@@ -319,5 +391,6 @@ while not processRunning:
 
     parameters = None
     processRunning = False
+    command = None
 
     print()

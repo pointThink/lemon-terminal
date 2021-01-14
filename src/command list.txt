@@ -2,9 +2,20 @@
 MODE = Changes the terminal mode (cmd, powershell, lemon)
 EXIT = Does exactly what it says
 CD = Changes the current working directory
-SHOWDIR = Prints the content of the current directory
+LS = Prints the content of the current directory
 REMOVE = Removes a file or directory
 NEWDIR = Creates a new directory
 ENDTASK = Kills a process
 COPY = Copies and pastes files into selected directory
-SHOWTASKS = Prints running processes
+CLEAR = Clears the screen
+START = starts a process
+TASKLIST = Prints running processes
+SYSINFO = Prints information about the computer
+INFO = Prints information about certian system components (mem, power, cpu, drive, net)
+TYPE = Prints contents of a text file
+TIME = Shows date and time
+NETSTATUS = Prints internet connection status
+PYEXEC = Executes a python command
+VAR = Creates a variable | var (string, int, output) name = value, to call variable use *varname
+ECHO = Prints a line
+LOG = Prints a log line eg. command = log "Info" "Hello World!", output="[ time + date ] Info: Hello World!"
