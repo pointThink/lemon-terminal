@@ -1,4 +1,10 @@
 # TODO: make code less messy
+
+
+# initialization
+resetCmd = True
+oneLine = False
+
 import string
 vars = {}
 
@@ -12,6 +18,10 @@ def log(type, string):
     print("[" + "\033[1;32;40m " + str(datetime.datetime.now()) + " \033[m" + "] " + type + ": " + string)
 
 try:
+
+    #from goto import label,goto,comefrom
+    from tkinter import *
+    import threading
     from colors import *
     import os
     import getpass
@@ -25,37 +35,63 @@ try:
     import socket
     import wmi
     import urllib
+    from pathlib import Path
     # wow that's a lot of imports
 except Exception as exc:
     log("Import Error", str(exc))
     input("Press enter to exit")
     sys.exit(1)
 
+try:
+    os.mkdir( os.getenv("APPDATA") + "\\lemon")
+    os.mkdir( os.getenv("APPDATA") + "\\lemon\\plugins")
+except:
+    pass
+
+try:
+    os.mkdir( os.getenv("APPDATA") + "\\lemon\\aliases")
+except:
+    pass
+
+pluginpath = os.getenv("APPDATA") + "/lemon/plugins/"  # this sets the location for plugins
+aliasPath = os.getenv("APPDATA") + "/lemon/aliases/"  # this sets the location for plugins
+
+
+# running plugins that are meant to be executed on run
+for file in os.listdir(pluginpath):
+    if file.split(".")[-1] == "pyor":
+        try:
+            exec(open(pluginpath + file).read())
+        except:
+            pass
+
+commandExecuting = threading.Event()
+changingMode = threading.Event()
+
 processRunning = False
 
 mode = "Lemon"
-version = "0.4.0"
+version = "0.5.0"
 
-log("Info", "Lemon has been launched succesfully with no errors")
-print()
-
-command = "sysinfo"
-
-print("Lemon Terminal version " + version +" |", end=" ")
-print(datetime.datetime.now())
-print("https://www.github.com/pointThink/lemon-terminal")
+command = 'info term'
 
 while not processRunning:
-        
+
+    vars["cwd"] = os.getcwd()
+    vars["home"] = Path.home()
+
+
 
     if command == None:
-        print(color(platform.node() + " @ " + getpass.getuser(), fg="cyan"), end=" ") # platform.node = getting computer name | getpass.getuser = getting current user
-        print(color(os.getcwd().upper(), fg="yellow"))
 
-        command = input("(" + color(mode, fg="green") + ") ") # command input
+        print(color(mode.upper(), fg="yellow") + ": " + color(os.getcwd().replace(str(Path.home()), "~").upper(), fg="cyan") + color(" $ ", fg="green"), end="")
+
+        command = input() # command input
     else:
         pass
-    
+
+    # resetCmd = True
+
     for key, value in vars.items(): # this replaces the dict key with its contents
         if key in command:
             command = command.replace("*" + key, str(value))
@@ -63,14 +99,18 @@ while not processRunning:
 
     keyWord = command.split(" ", 1)[0] # getting first word from string
     keyWord = keyWord.lower()
- 
+
     parameters = command.split(" ") # getting parameters from the string
     del parameters[0] # removes the keyword
-    
+
     print()
     processRunning = True
-    
+
+    commandExecuting.set()
+
+
     # general commands
+
     if command == "exit":
         log("Exit", "Exited lemon terminal [Exit by user]")
         sys.exit(1)
@@ -83,6 +123,9 @@ while not processRunning:
             print(color("Could not change path " + str(e), fg="red"))
 
     elif keyWord == "mode": # changing terminal mode
+
+        changingMode.set()
+
         if parameters[0] == "powershell":
             mode = "Powershell"
         elif parameters[0] == "cmd":
@@ -111,12 +154,17 @@ while not processRunning:
 
             try:
                 for file in range(len(dirList)): # using for loop for printing contents beacuse printing lists normally sucks
-                    
+
                         if os.path.isdir(dir + dirList[file]):
-                            print("[FOLDER] " + dirList[file])
-                    
+                            print(" " + color(dirList[file], fg="blue") + "/")
+
                         elif os.path.isfile(dir + dirList[file]):
-                            print(color("[FILE]   ", fg="green") + dirList[file])
+                            if dirList[file].split(".")[-1] == "exe":
+                                print(" " + color(dirList[file], fg="pink"))
+                            else:
+
+                                print(" " + color(dirList[file], fg="white"))
+
             except:
                 pass
 
@@ -151,24 +199,24 @@ while not processRunning:
         # task managment commands
         elif keyWord == "endtask": # killing task
             ti = 0
-            
+
             f = wmi.WMI()
             name = parameters[0]
-            
+
             for process in f.Win32_Process():
                 if process.name == name:
                     process.Terminate()
-                    
-                    print(color("SUCESS The process has been terminated", fg="green"))
+
+                    print(color("Succsess! The process has been terminated", fg="green"))
                     ti += 1
-                    
+
                 else:
                     try: # this try except is here to prevent from index out of range error
                         if parameters[1] == "debug":
                             print(color("Names dont match. No process terminated", fg="red"))
                     except:
                         pass
-                
+
             if ti == 0:
                 print()
                 print(color("Process " + name + " not found", fg="red"))
@@ -223,7 +271,7 @@ while not processRunning:
                         print(line, end="")
                 except: # if it fails lemon throws an error
                     print(color("Could not open file " + file, fg="red"))
-                    
+
         elif keyWord == "info": # prints information about system
             try:
 
@@ -231,26 +279,26 @@ while not processRunning:
                     memory = psutil.virtual_memory()
                     print("Total: " + color(round(memory.total / 1000000000, 1), fg="orange")) # getting total available memory and rounding it
                     print()
-               
+
                     print("Used: " + color(round(memory.used / 1000000000, 1), fg="orange")) # getting currently used memory and rounding it
                     print("Free: " + color(round(memory.available / 1000000000, 1), fg="orange")) # getting currently available memory and rounding it
-                 
+
                 elif parameters[0] == "drive":
                     drives = win32api.GetLogicalDriveStrings() # getting list of available drive
                     drives = drives.split('\000')[:-1]
-                
+
                     try:
-                
+
                         for drive in drives:
                             print(drive, end=" ")
                             print("info")
-                    
+
                             print("Total: " + color(psutil.disk_usage(drive).total / 1000000000, fg="orange")) # printing total space on drive
                             print("Used space: " + color(psutil.disk_usage(drive).used / 1000000000, fg="orange")) # printing used space on drive
                             print("Free space: " + color(psutil.disk_usage(drive).free / 1000000000, fg="orange")) # printing available space on drive
-                    
+
                             driveTypeInt = win32file.GetDriveType(drive) # getting the drive type id
-                    
+
                             if driveTypeInt == 2: # figuring out drive type from id
                                 driveType = "Removable Disk"
                             elif driveTypeInt == 3:
@@ -261,136 +309,168 @@ while not processRunning:
                                 driveType = "CD"
                             else:
                                 driveType = "Unknown"
-                    
+
                             print("Drive type: " + color(driveType, fg ="orange")) # printing the found drive type
                             print()
-                        
+
                     except PermissionError: # The "drive not ready" error is identified as "PermissionError" this may cause problems in some specific scenarios
                         print(color("Could not read drive information Drive not ready", fg="red"))
-                    except: 
+                    except:
                         print(color("Unknown Error", fg="red"))
-        
+
                 elif parameters[0] == "net":
                     print("Name: " + color(socket.gethostname(), fg="orange")) # getting computer name
                     print("IP Adress: " + color(socket.gethostbyname(socket.gethostname()), fg="orange"))  # getting computer ip adress
-                
+
                     print()
                     print("NIC Cards")
-                
+
 
                     addrs = psutil.net_if_addrs().keys # getting nic cards
-                
+
                     for nic in addrs():
                         print(color(nic, fg="orange"))
-                
+
                 elif parameters[0] == "power":
                     print("Charge: " + color(psutil.sensors_battery().percent, fg="orange"), end="") # printing charge percentage
                     print(color("%", fg="orange"))
-                
+
                     if psutil.sensors_battery().power_plugged == False:  # printing power status
                         print("Status: " + color("Using Battery", fg="orange"))
-                    
+
                     elif psutil.sensors_battery().power_plugged == True:
                         print("Status: " + color("Plugged in", fg="orange"))
 
                     else:
                         print("Status: " + color("Unknown", fg="orange"))
-            
+
                 elif parameters[0] == "cpu":
                     print("CPU: " + color(platform.processor(), fg="orange")) # printing processor namee
                     print("Architecture: " + color(platform.machine(), fg="orange")) # printing architectur
                     print("Logical CPU's: " + color(psutil.cpu_count(logical=True), fg="orange")) # printing logical cpu count
-            
+
                 elif parameters[0] == "term": # prints information about terminal
                     print("Lemon-Terminal version " + version)
                     print("Written and maintained by pointThink")
                     print("Project website lemon-terminal.atwebpages.com")
-                
-            
+
+
                 else:
                     print(color("Invalid parameter", fg="red"))
             except:
                 print(color("Invalid parameter", fg="red"))
-            
+
         elif keyWord == "time": # printing time and date
             print("The current time is ", end="")
             print(datetime.datetime.now())
-            
+
         elif keyWord == "netstatus":
             ip = socket.gethostbyname(socket.gethostname()) # getting ip adress
-            
+
             if ip == "127.0.0.1":
                 print("No internet connection")
-                
+
             else:
                 print("Connected")
-                
+
         elif keyWord == "log":
             try:
                 log(command.split('"')[1], command.split('"')[3])
             except Exception as e:
                 print(color("Error " + str(e), fg="red"))
-            
+
         elif keyWord == "pyexec":
             try:
                 exec(command[7:])
             except Exception as e:
                 print(e)
-                
+
         elif keyWord == "var":
             try:
                 length = len(keyWord + "" + parameters[0] + " " + parameters[1] + "  ")
-                
+
                 if parameters[0] == "string":
                     vars[parameters[1]] = command.split('=')[1].lstrip().rstrip()
                 elif parameters[0] == "int":
                     vars[parameters[1]] = eval(command.split('=')[1])
+                elif parameters[0] == "bool":
+                    vars[parameters[1]] = bool(command.split('=')[1].lstrip().rstrip())
                 elif parameters[0] == "output":
-                    
+
                     if command.split('=')[1].lstrip().rstrip() == "input_read":
                          vars[parameters[1]] = input()
-                        
+
                 else:
                     print("Invalid var type")
             except Exception as e:
                 print(color("Error: "+ str(e), fg="red"))
-                
+
         elif keyWord == "echo":
             try:
-                string = command.split('"')[1]
-                print(string)
+                for parameter in parameters:
+                    print(parameter, end=" ")
+                print()
             except Exception as e:
                 print(color("Error: "+ str(e), fg="red"))
-                
+
         elif keyWord == "ice":
-            print("ICE - Internal Code Executor")
             print("Anything you write here will be executed as python code")
             print()
-            
+
             code = sys.stdin.readlines()
             joinedCode = "\n".join(code)
-            
+
             try:
                 print()
                 exec(joinedCode)
             except Exception as e:
                 print(e)
 
-        else: # if no matching command was found it will try to execute a program
+        elif keyWord == "hibernate": # command for hibernation
+            os.system("rundll32.exe powrprof.dll,SetSuspendState 0,1,0")
+
+        elif keyWord == "mk": # "make" command
             try:
-                subprocess.call(command)
-            except: # if that fails lemon will throw an error
-                print(color(command + " isn't a command or executable file", fg="red"))
+                if parameters[0] == "dir":
+                    os.mkdir(command[7:]) # making directory
+                elif parameters[0] == "file":
+                    mkFile = open(command[8:], "w") # making file
+                    mkFile.close()
+            except Exception as e:
+                print(color(e, fg="red"))
+
+
+        else: # if no matching command was found it will try to execute a program or plugin
+            if os.path.isfile(pluginpath + keyWord + ".py"): # if plugin found it will execute plugin
+                pluginPath = pluginpath + keyWord + ".py"
+                try:
+                    exec(open(pluginPath ).read())
+
+                except Exception as e:
+                    print(color(e, fg="red"))
+
+            elif os.path.isfile(aliasPath + keyWord + ".al"): # this is a function for aliases, dosen't work yet
+                command = open(aliasPath + keyWord + ".al").read()
+                restetCmd = False
+
+            else:
+                try:
+                    subprocess.call(command)
+                except: # if that fails lemon will throw an error
+                    print(color(keyWord + " isn't a command or executable file", fg="red"))
 
     elif mode == "Command Prompt":
         os.system("cmd /c " + command)
 
     elif mode == "Powershell":
         os.system("powershell /c " + command)
-        
 
+
+    commandExecuting.clear()
     parameters = None
     processRunning = False
-    command = None
+
+    if resetCmd:
+        command = None
 
     print()

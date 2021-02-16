@@ -19,3 +19,5 @@ PYEXEC = Executes a python command
 VAR = Creates a variable | var (string, int, output) name = value, to call variable use *varname
 ECHO = Prints a line
 LOG = Prints a log line eg. command = log "Info" "Hello World!", output="[ time + date ] Info: Hello World!"
+HIBERNATE = Hibernates the computer
+MK = Short for make. Makes a directory or file examples: mk dir hello, mk file hello.txt
