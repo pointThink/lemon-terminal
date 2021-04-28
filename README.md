@@ -1,3 +1,5 @@
+# This project is dead and the code sucks, might make a re-write
+
 <p align="center">
     <img src="src/icon.ico" alt="Lemon logo" width="72" height="72">
   </a>
